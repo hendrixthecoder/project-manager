@@ -114,5 +114,20 @@ export const mutations = {
             localStorage.setItem("boards", newBoardState);
         }
         
+    },
+    editCardText(state, payload) {
+        const { cardId, boardId, text } = payload;
+        if (!cardId || !boardId || !text) return;
+
+        const boardIndex = state.boards.findIndex((board) => board.id === boardId)
+        const cardIndex = state.boards[boardIndex].cards.findIndex((card) => card.id === cardId)
+
+        if (cardIndex !== -1) {
+            state.boards[boardIndex].cards[cardIndex].text = text;
+
+            const newBoardState = JSON.stringify(state.boards);
+            localStorage.setItem("boards", newBoardState);
+        }
+
     }
 }

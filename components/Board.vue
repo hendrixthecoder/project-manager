@@ -1,6 +1,7 @@
 <template lang="">
   <section
     :class="[isDraggingOver ? 'border border-gray-500' : '']"
+    :data-board-id="board.id"
     class="p-2 flex flex-col gap-3 min-w-64 max-w-64 rounded"
     @dragenter="handleDragEnter"
     @dragleave="handleDragLeave"
@@ -80,6 +81,7 @@ export default {
     handleDrop(event) {
       this.isDraggingOver = false;
       let data = event.dataTransfer.getData("application/json");
+      if (!data) return;
       data = JSON.parse(data);
 
       this.moveCardToAnotherBoard({
