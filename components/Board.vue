@@ -11,17 +11,19 @@
   >
     <div class="flex group gap-1.5">
       <div
+        ref="boardNameInput"
         @click="isEditingName = true"
         @blur="handleBlur"
+        @keydown="handleKeyDown"
         :class="[isEditingName ? ' ring-2' : '']"
-        class="text-gray-400 font-medium text-lg flex-grow rounded outline-none"
+        class="text-gray-400 font-medium text-lg flex-grow rounded outline-none break-all"
         :contenteditable="true"
       >
         {{ board.name }}
       </div>
       <button
         @click="handleDeleteBoard"
-        class="text-red-500 invisible group-hover:visible"
+        class="text-red-600 invisible group-hover:visible"
       >
         <TrashIcon :size="20" />
       </button>
@@ -56,6 +58,12 @@ export default {
       "moveCardToAnotherBoard",
       "changeCardName",
     ]),
+    handleKeyDown(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        this.$refs.boardNameInput.blur();
+      }
+    },
     handleDeleteBoard() {
       this.removeBoard({
         boardId: this.board.id,
