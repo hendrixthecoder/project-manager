@@ -4,18 +4,19 @@
     @drop="handleDrop"
     @dragenter="handleDragEnter"
     @dragleave="handleDragLeave"
-    class="border border-red-500 rounded bg-red-300 p-2 h-1/4 flex items-center justify-center flex-grow min-w-44"
+    class="border rounded bg-red-300 p-2 h-1/4 flex items-center justify-center flex-grow min-w-44 transition-colors duration-300"
+    :class="[isDraggingOver ? 'bg-red-700 border-red-700' : 'border-red-500']"
   >
     <TrashIcon :size="60" class="text-red-500" v-if="!isDraggingOver" />
     <TrashOpenIcon
       :size="60"
-      class="text-red-500 transform scale-110 duration-100"
+      class="text-red-800 delay-200 animate-bounce"
       v-else
     />
   </section>
 </template>
 <script>
-import { mapMutations, mapGetters } from "vuex";
+import { mapMutations } from "vuex";
 
 export default {
   components: {
@@ -29,10 +30,10 @@ export default {
   },
   methods: {
     ...mapMutations(["removeCardFromBoard"]),
-    handleDragEnter(event) {
+    handleDragEnter() {
       this.isDraggingOver = true;
     },
-    handleDragLeave(event) {
+    handleDragLeave() {
       this.isDraggingOver = false;
     },
     handleDragOver(event) {
