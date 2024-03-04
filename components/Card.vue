@@ -1,20 +1,44 @@
 <template lang="">
-  <div
-    :class="[
-      isBeingDragged
-        ? 'opacity-50 border-dashed border-gray-300 text-gray-900'
-        : 'border-gray-700 text-inherit',
-    ]"
-    class="border shadow-md rounded p-2 text-sm bg-gray-900 cursor-grab active:cursor-grabbing break-all outline-none"
-    draggable="true"
-    :contenteditable="true"
-    @dragstart="(e) => handleDragStart(e)"
-    @dragend="isBeingDragged = false"
-    @keydown="handleKeydown"
-    @blur="handleEditText"
-    ref="cardNameInput"
-  >
-    {{ card.text }}
+  <div class="group relative">
+    <!-- Edit button begins here -->
+    <button
+      v-if="!isEditingCard"
+      @click="handleClickEdit"
+      class="absolute rounded p-1 bg-gray-700 border-gray-400 right-0 invisible group-hover:visible opacity-75 text-white"
+    >
+      <EditIcon :size="20" />
+    </button>
+    <!-- Edit button begins here -->
+
+    <!-- Edit card box -->
+    <div
+      @blur="handleEditText"
+      @keydown="handleKeydown"
+      contenteditable="true"
+      class="border shadow-md border-gray-200 border-dashed rounded p-2 text-sm bg-gray-900 break-all outline-none"
+      v-if="isEditingCard"
+      ref="editBox"
+    >
+      {{ card.text }}
+    </div>
+    <!-- Edit card box -->
+
+    <div
+      v-else
+      :class="[
+        isBeingDragged
+          ? 'opacity-50 border-dashed border-gray-300 text-gray-900'
+          : 'border-gray-700 text-inherit',
+      ]"
+      class="border shadow-md rounded p-2 text-sm bg-gray-900 cursor-grab active:cursor-grabbing break-all outline-none"
+      contenteditable="false"
+      draggable="true"
+      @dragstart="(e) => handleDragStart(e)"
+      @dragend="isBeingDragged = false"
+      ref="cardNameInput"
+    >
+      {{ card.text }}
+    </div>
   </div>
 </template>
 <script>
@@ -33,17 +57,14 @@ export default {
   },
   data() {
     return {
-      isCardEditable: true,
       isBeingDragged: false,
+      isEditingCard: false,
     };
   },
   methods: {
     ...mapMutations(["editCardText", "removeCardFromBoard"]),
-    async handleDragStart(event) {
+    handleDragStart(event) {
       this.isBeingDragged = true;
-      this.isCardEditable = false;
-
-      this.changeDragImage(event);
 
       const data = JSON.stringify({
         cardId: this.card.id,
@@ -54,11 +75,16 @@ export default {
     },
     handleKeydown(event) {
       if (event.key === "Enter" && !event.shiftKey) {
-        this.$refs.cardNameInput.blur();
+        if (this.isEditingCard) {
+          this.$nextTick(() => {
+            this.$refs.editBox.focus();
+          });
+        }
         this.handleEditText(event);
       }
     },
     handleEditText(event) {
+      this.isEditingCard = false;
       const text = event.target.textContent.trim();
       if (!text) return (event.target.textContent = this.card.text);
 
@@ -68,7 +94,17 @@ export default {
         text,
       });
     },
-    changeDragImage(event) {},
+    handleClickEdit() {
+      this.isEditingCard = true;
+      if (this.isEditingCard) {
+        this.$nextTick(() => {
+          this.$refs.editBox.focus();
+        });
+      }
+    },
+  },
+  components: {
+    EditIcon: () => import("vue-material-design-icons/PencilOutline.vue"),
   },
 };
 </script>

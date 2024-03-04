@@ -1,5 +1,5 @@
 <template lang="">
-  <section class="">
+  <section class="flex flex-col gap-2">
     <Card
       v-for="(card, idx) of cards"
       :card="card"

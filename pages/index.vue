@@ -2,7 +2,7 @@
   <div
     class="border border-gray-700 flex-grow rounded bg-gray-800 p-5 flex justify-between"
   >
-    <div class="flex gap-3 max-w-6xl overflow-y-scroll">
+    <div class="flex gap-3 max-w-6xl overflow-y-hidden">
       <Board :board="board" v-for="(board, idx) of boards" :key="board.id" />
       <AddBoard />
     </div>
@@ -30,7 +30,6 @@ export default {
     this.initializeBoards();
     this.boards = this.getBoards;
   },
-  components: {},
 };
 </script>
 <style lang=""></style>

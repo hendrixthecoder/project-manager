@@ -1,12 +1,13 @@
 <template lang="">
   <section
     :class="[isDraggingOver ? 'border border-gray-500' : '']"
-    :data-board-id="board.id"
     class="p-2 flex flex-col gap-3 min-w-64 max-w-64 rounded"
     @dragenter="handleDragEnter"
     @dragleave="handleDragLeave"
     @dragover="handleDragOver"
     @drop="handleDrop"
+    @dragend="handleDragEnd"
+    ref="board"
   >
     <div class="flex group gap-1.5">
       <div
@@ -60,8 +61,44 @@ export default {
         boardId: this.board.id,
       });
     },
-    handleDragEnter() {
+    handleDragEnter(e) {
       this.isDraggingOver = true;
+    },
+    highlightIndicators(e) {
+      const indicators = this.getIndicators();
+      this.clearHighlights(indicators);
+      const el = this.getNearestIndicator(e, indicators);
+      el.element?.classList.remove("hidden");
+    },
+    getIndicators() {
+      return Array.from(
+        document.querySelectorAll(`[data-column-id="${this.board.id}"]`)
+      );
+    },
+    clearHighlights(els) {
+      const indicators = els || this.getIndicators();
+      indicators.forEach((i) => {
+        i.classList.add("hidden");
+      });
+    },
+    getNearestIndicator(e, indicators) {
+      const DISTANCE_OFFSET = 100;
+      const el = indicators.reduce(
+        (closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = e.clientY - (box.top + DISTANCE_OFFSET);
+
+          if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+          } else return closest;
+        },
+        {
+          offset: Number.NEGATIVE_INFINITY,
+          element: indicators[indicators.length - 1],
+        }
+      );
+
+      return el;
     },
     handleBlur(event) {
       this.isEditingName = false;
@@ -74,9 +111,11 @@ export default {
       });
     },
     handleDragLeave() {
-      setTimeout(() => {
-        this.isDraggingOver = false;
-      }, 200);
+      this.isDraggingOver = false;
+      // this.clearHighlights();
+    },
+    handleDragEnd() {
+      // this.clearHighlights();
     },
     handleDrop(event) {
       this.isDraggingOver = false;
@@ -94,6 +133,7 @@ export default {
       event.preventDefault();
       this.isDraggingOver = true;
       event.dataTransfer.dropEffect = "move";
+      // this.highlightIndicators(event);
     },
   },
   components: {
