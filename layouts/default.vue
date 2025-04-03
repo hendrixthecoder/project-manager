@@ -1,5 +1,5 @@
 <template lang="">
-  <main class="min-h-screen bg-gray-900 text-gray-300 flex flex-col p-5">
+  <main class="h-dvh bg-gray-900 text-gray-300 flex flex-col p-5">
     <nuxt />
   </main>
 </template>

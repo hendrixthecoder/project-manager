@@ -6,7 +6,6 @@
     @dragleave="handleDragLeave"
     @dragover="handleDragOver"
     @drop="handleDrop"
-    @dragend="handleDragEnd"
     ref="board"
   >
     <div class="flex group gap-1.5">
@@ -85,10 +84,6 @@ export default {
     },
     handleDragLeave() {
       this.isDraggingOver = false;
-      // this.clearHighlights();
-    },
-    handleDragEnd() {
-      // this.clearHighlights();
     },
     handleDrop(event) {
       this.isDraggingOver = false;

@@ -12,6 +12,10 @@ export const state = () => ({
         }
     ],
     darkMode: false,
+    draggedCardInfo: {
+        cardId: null,
+        boardId: null
+    }
 })
 
 export const actions = {
@@ -87,6 +91,7 @@ export const mutations = {
         } 
     },
     moveCardToAnotherBoard(state, payload) {
+        return;
         const { cardId, boardId, newBoardId } = payload;
         const oldBoardIndex = state.boards.findIndex(board => board.id === boardId)
         const newBoardIndex = state.boards.findIndex(board => board.id === newBoardId)
@@ -129,5 +134,10 @@ export const mutations = {
             localStorage.setItem("boards", newBoardState);
         }
 
+    },
+    updateDraggedCardInfo(state, payload) {
+        const { cardId, boardId } = payload;
+
+        state.draggedCardInfo = { cardId, boardId }
     }
 }

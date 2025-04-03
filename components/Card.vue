@@ -1,5 +1,5 @@
 <template lang="">
-  <div class="group relative" :data-card-id="card.id">
+  <div class="group relative">
     <!-- Edit button begins here -->
     <button
       v-if="!isEditingCard"
@@ -10,7 +10,15 @@
     </button>
     <!-- Edit button begins here -->
 
-    <!-- Edit card box -->
+    <!-- Top indicator begins here -->
+    <div
+      class="border border-gray-500 mb-1"
+      :class="[isBeingDragged]"
+      v-show="isHoveringAbove"
+    ></div>
+    <!-- Top indicator ends here -->
+
+    <!-- Edit card box begins -->
     <div
       @blur="handleEditText"
       @keydown="handleKeydown"
@@ -22,10 +30,11 @@
     >
       {{ card.text }}
     </div>
-    <!-- Edit card box -->
+    <!-- Edit card box ends -->
 
     <div
       v-else
+      :data-card-id="card.id"
       :class="[
         isBeingDragged
           ? 'opacity-50 border-dashed border-gray-300 text-gray-900'
@@ -35,15 +44,22 @@
       contenteditable="false"
       draggable="true"
       @dragstart="(e) => handleDragStart(e)"
-      @dragend="isBeingDragged = false"
+      @dragend="handleDragEnd"
+      @dragover="handleDragOver"
+      @dragleave="resetIndicators"
+      @drop="resetIndicators"
       ref="cardNameInput"
     >
       {{ card.text }}
     </div>
+
+    <!-- Bottom indicator begins here -->
+    <div class="border border-gray-500 mt-1" v-show="isHoveringBelow"></div>
+    <!-- Bottom indicator ends here -->
   </div>
 </template>
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   props: {
@@ -60,10 +76,20 @@ export default {
     return {
       isBeingDragged: false,
       isEditingCard: false,
+      isHoveringAbove: false,
+      isHoveringBelow: false,
     };
   },
   methods: {
-    ...mapMutations(["editCardText", "removeCardFromBoard"]),
+    ...mapMutations([
+      "editCardText",
+      "removeCardFromBoard",
+      "updateDraggedCardInfo",
+    ]),
+    handleDragEnd(event) {
+      this.isBeingDragged = false;
+      this.updateDraggedCardInfo({ cardId: null, boardId: null });
+    },
     handleDragStart(event) {
       this.isBeingDragged = true;
 
@@ -86,6 +112,11 @@ export default {
       document.body.appendChild(dragPreview);
 
       event.dataTransfer.setDragImage(dragPreview, 10, 10);
+
+      this.updateDraggedCardInfo({
+        cardId: this.card.id,
+        boardId: this.board.id,
+      });
 
       event.dataTransfer.setData("application/json", data);
 
@@ -126,9 +157,41 @@ export default {
         });
       }
     },
+    handleDragOver(event) {
+      event.preventDefault();
+
+      const targetCardId = Number(event.target.dataset.cardId);
+      if (isNaN(targetCardId)) return;
+
+      const { cardId: thisCardId } = this.draggedCardInfo;
+
+      const threshold = 25;
+
+      if (Number(thisCardId) !== targetCardId) {
+        const rect = event.target.getBoundingClientRect();
+        const { clientY } = event;
+
+        if (clientY - rect.top < threshold) {
+          this.isHoveringAbove = true;
+          this.isHoveringBelow = false;
+        } else if (rect.bottom - clientY < threshold) {
+          this.isHoveringAbove = false;
+          this.isHoveringBelow = true;
+        } else {
+          this.resetIndicators();
+        }
+      }
+    },
+    resetIndicators() {
+      this.isHoveringAbove = false;
+      this.isHoveringBelow = false;
+    },
   },
   components: {
     EditIcon: () => import("vue-material-design-icons/PencilOutline.vue"),
+  },
+  computed: {
+    ...mapState(["draggedCardInfo"]),
   },
 };
 </script>
