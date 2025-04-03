@@ -61,9 +61,9 @@ export default {
     handleOpenForm() {
       this.showAddBoardForm = true;
 
-      if (this.$refs.addBoardInput) {
+      this.$nextTick(() => {
         this.$refs.addBoardInput.focus();
-      }
+      });
     },
     handleAddNewBoard() {
       this.addBoard({
