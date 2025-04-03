@@ -10,6 +10,7 @@
         id=""
         cols="30"
         rows="1"
+        ref="newCardForm"
       >
       </textarea>
       <div class="flex justify-end gap-2 items-center text-sm">
@@ -29,7 +30,7 @@
     <button
       v-else
       class="flex items-center gap-1 text-gray-500 self-start text-sm"
-      @click="showNewCardForm = true"
+      @click="handleOpenNewCardForm"
     >
       <PlusIcon :size="20" />
       <span>Add card</span>
@@ -60,6 +61,12 @@ export default {
 
       this.card = "";
       this.showNewCardForm = false;
+    },
+    handleOpenNewCardForm() {
+      this.showNewCardForm = true;
+      this.$nextTick(() => {
+        this.$refs.newCardForm?.focus();
+      });
     },
   },
   data() {
