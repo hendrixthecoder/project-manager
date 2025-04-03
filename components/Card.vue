@@ -1,5 +1,5 @@
 <template lang="">
-  <div class="group relative">
+  <div class="group relative" :data-card-id="card.id">
     <!-- Edit button begins here -->
     <button
       v-if="!isEditingCard"
@@ -15,6 +15,7 @@
       @blur="handleEditText"
       @keydown="handleKeydown"
       contenteditable="true"
+      draggable="false"
       class="border shadow-md border-gray-200 border-dashed rounded p-2 text-sm bg-gray-900 break-all outline-none"
       v-if="isEditingCard"
       ref="editBox"
@@ -71,7 +72,30 @@ export default {
         boardId: this.board.id,
       });
 
+      const dragPreview = document.createElement("div");
+      dragPreview.textContent = this.card.text;
+      dragPreview.style.position = "absolute";
+      dragPreview.style.top = "-9999px";
+      dragPreview.style.padding = "8px 12px";
+      dragPreview.style.background = "#111827";
+      dragPreview.style.color = "white";
+      dragPreview.style.borderRadius = "8px";
+      dragPreview.style.fontSize = "14px";
+      dragPreview.style.borderColor = "white";
+      dragPreview.style.border = "0.5px solid #4b5563";
+      document.body.appendChild(dragPreview);
+
+      event.dataTransfer.setDragImage(dragPreview, 10, 10);
+
       event.dataTransfer.setData("application/json", data);
+
+      event.target.addEventListener(
+        "dragend",
+        () => {
+          document.body.removeChild(dragPreview);
+        },
+        { once: true }
+      );
     },
     handleKeydown(event) {
       if (event.key === "Enter" && !event.shiftKey) {

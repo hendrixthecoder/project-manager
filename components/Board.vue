@@ -69,45 +69,10 @@ export default {
         boardId: this.board.id,
       });
     },
-    handleDragEnter(e) {
+    handleDragEnter() {
       this.isDraggingOver = true;
     },
-    highlightIndicators(e) {
-      const indicators = this.getIndicators();
-      this.clearHighlights(indicators);
-      const el = this.getNearestIndicator(e, indicators);
-      el.element?.classList.remove("hidden");
-    },
-    getIndicators() {
-      return Array.from(
-        document.querySelectorAll(`[data-column-id="${this.board.id}"]`)
-      );
-    },
-    clearHighlights(els) {
-      const indicators = els || this.getIndicators();
-      indicators.forEach((i) => {
-        i.classList.add("hidden");
-      });
-    },
-    getNearestIndicator(e, indicators) {
-      const DISTANCE_OFFSET = 100;
-      const el = indicators.reduce(
-        (closest, child) => {
-          const box = child.getBoundingClientRect();
-          const offset = e.clientY - (box.top + DISTANCE_OFFSET);
-
-          if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-          } else return closest;
-        },
-        {
-          offset: Number.NEGATIVE_INFINITY,
-          element: indicators[indicators.length - 1],
-        }
-      );
-
-      return el;
-    },
+    getIndicators() {},
     handleBlur(event) {
       this.isEditingName = false;
       const newName = event.target.textContent.trim();
