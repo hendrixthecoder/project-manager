@@ -47,10 +47,10 @@
       @dragend="handleDragEnd"
       @dragover="handleDragOver"
       @dragleave="resetIndicators"
-      @drop="resetIndicators"
+      @drop="handleDrop"
       ref="cardNameInput"
     >
-      {{ card.text }}
+      {{ card.text }} - {{ card.id }}
     </div>
 
     <!-- Bottom indicator begins here -->
@@ -78,6 +78,7 @@ export default {
       isEditingCard: false,
       isHoveringAbove: false,
       isHoveringBelow: false,
+      threshold: 20,
     };
   },
   methods: {
@@ -85,6 +86,7 @@ export default {
       "editCardText",
       "removeCardFromBoard",
       "updateDraggedCardInfo",
+      "changeCardPosition",
     ]),
     handleDragEnd(event) {
       this.isBeingDragged = false;
@@ -165,22 +167,52 @@ export default {
 
       const { cardId: thisCardId } = this.draggedCardInfo;
 
-      const threshold = 25;
-
       if (Number(thisCardId) !== targetCardId) {
         const rect = event.target.getBoundingClientRect();
         const { clientY } = event;
 
-        if (clientY - rect.top < threshold) {
+        if (clientY - rect.top < this.threshold) {
           this.isHoveringAbove = true;
           this.isHoveringBelow = false;
-        } else if (rect.bottom - clientY < threshold) {
+        } else if (rect.bottom - clientY < this.threshold) {
           this.isHoveringAbove = false;
           this.isHoveringBelow = true;
         } else {
           this.resetIndicators();
         }
       }
+    },
+    handleDrop(event) {
+      this.resetIndicators();
+
+      const replacedCardId = Number(event.target.dataset.cardId);
+      const replacedCardsBoardId =
+        event.target.closest("[data-board-id]").dataset.boardId;
+      console.log({ replacedCardsBoardId });
+
+      this.isDraggingOver = false;
+
+      let data = event.dataTransfer.getData("application/json");
+      if (!data) return;
+      const { boardId, cardId } = JSON.parse(data);
+
+      let indexToShiftBy;
+      const rect = event.target.getBoundingClientRect();
+      const { clientY } = event;
+
+      if (clientY - rect.top < this.threshold) {
+        indexToShiftBy = -1;
+      } else if (rect.bottom - clientY < this.threshold) {
+        indexToShiftBy = 1;
+      }
+
+      this.changeCardPosition({
+        cardId: Number(cardId),
+        boardId: Number(boardId),
+        newBoardId: Number(replacedCardsBoardId),
+        replacedCardId,
+        indexToShiftBy,
+      });
     },
     resetIndicators() {
       this.isHoveringAbove = false;

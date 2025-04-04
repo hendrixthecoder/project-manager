@@ -7,7 +7,9 @@
     @dragover="handleDragOver"
     @drop="handleDrop"
     ref="board"
+    :data-board-id="board.id"
   >
+    {{ board.id }}
     <div class="flex group gap-1.5">
       <div
         ref="boardNameInput"
@@ -52,11 +54,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations([
-      "removeBoard",
-      "moveCardToAnotherBoard",
-      "changeCardName",
-    ]),
+    ...mapMutations(["removeBoard", "changeCardName", "pushCardToBoard"]),
     handleKeyDown(event) {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
@@ -85,23 +83,23 @@ export default {
     handleDragLeave() {
       this.isDraggingOver = false;
     },
-    handleDrop(event) {
-      this.isDraggingOver = false;
-      let data = event.dataTransfer.getData("application/json");
-      if (!data) return;
-      data = JSON.parse(data);
-
-      this.moveCardToAnotherBoard({
-        cardId: data.cardId,
-        boardId: data.boardId,
-        newBoardId: this.board.id,
-      });
-    },
     handleDragOver(event) {
       event.preventDefault();
       this.isDraggingOver = true;
       event.dataTransfer.dropEffect = "move";
-      // this.highlightIndicators(event);
+    },
+    handleDrop(event) {
+      this.isDraggingOver = false;
+
+      let data = event.dataTransfer.getData("application/json");
+      if (!data) return;
+      const { boardId, cardId } = JSON.parse(data);
+
+      this.pushCardToBoard({
+        newBoardId: this.board.id,
+        cardId,
+        boardId,
+      });
     },
   },
   components: {
