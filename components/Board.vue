@@ -9,7 +9,6 @@
     ref="board"
     :data-board-id="board.id"
   >
-    {{ board.id }}
     <div class="flex group gap-1.5">
       <div
         ref="boardNameInput"

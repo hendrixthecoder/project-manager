@@ -50,7 +50,7 @@
       @drop="handleDrop"
       ref="cardNameInput"
     >
-      {{ card.text }} - {{ card.id }}
+      {{ card.text }}
     </div>
 
     <!-- Bottom indicator begins here -->
