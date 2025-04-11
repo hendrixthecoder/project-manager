@@ -118,6 +118,7 @@ export const mutations = {
         if (indexToShiftBy === 1) insertIndex += 1;
 
         // Adjust insert index if card was removed before insertion point on same board
+        // This is because after splicing the cardToMoveIndex is reduced by 1 as the array is modified
         if (oldBoardIndex === newBoardIndex && cardToMoveIndex < insertIndex) {
             insertIndex -= 1;
         }

@@ -188,7 +188,6 @@ export default {
       const replacedCardId = Number(event.target.dataset.cardId);
       const replacedCardsBoardId =
         event.target.closest("[data-board-id]").dataset.boardId;
-      console.log({ replacedCardsBoardId });
 
       this.isDraggingOver = false;
 
@@ -205,6 +204,8 @@ export default {
       } else if (rect.bottom - clientY < this.threshold) {
         indexToShiftBy = 1;
       }
+
+      if (!indexToShiftBy) return;
 
       this.changeCardPosition({
         cardId: Number(cardId),
