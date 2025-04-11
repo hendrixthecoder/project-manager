@@ -1,7 +1,7 @@
 <template lang="">
   <section
-    :class="[isDraggingOver ? 'border border-gray-500' : '']"
-    class="p-2 flex flex-col gap-3 min-w-64 max-w-64 rounded"
+    :class="[isDraggingOver ? 'border-gray-500' : 'border-transparent']"
+    class="border p-2 flex flex-col gap-3 min-w-64 max-w-64 rounded transition-colors"
     @dragenter="handleDragEnter"
     @dragleave="handleDragLeave"
     @dragover="handleDragOver"
@@ -15,7 +15,7 @@
         @click="isEditingName = true"
         @blur="handleBlur"
         @keydown="handleKeyDown"
-        :class="[isEditingName ? ' ring-2' : '']"
+        :class="[isEditingName ? ' ring-2 ring-gray-600' : '']"
         class="text-gray-400 font-medium text-lg flex-grow rounded outline-none break-all"
         :contenteditable="true"
       >

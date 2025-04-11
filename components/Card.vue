@@ -4,7 +4,7 @@
     <button
       v-if="!isEditingCard"
       @click="handleClickEdit"
-      class="absolute rounded p-1 bg-gray-700 border-gray-400 right-0 invisible group-hover:visible opacity-75 text-white"
+      class="absolute top-1.5 rounded rounded-tl-none rounded-br-none p-1 bg-gray-700 border-gray-400 right-0 invisible group-hover:visible opacity-75 text-white"
     >
       <EditIcon :size="20" />
     </button>
@@ -12,9 +12,8 @@
 
     <!-- Top indicator begins here -->
     <div
-      class="border border-gray-500 mb-1"
-      :class="[isBeingDragged]"
-      v-show="isHoveringAbove"
+      class="border mb-1 transition-colors"
+      :class="[isHoveringAbove ? 'border-gray-500' : 'border-transparent']"
     ></div>
     <!-- Top indicator ends here -->
 
@@ -24,7 +23,7 @@
       @keydown="handleKeydown"
       contenteditable="true"
       draggable="false"
-      class="border shadow-md border-gray-200 border-dashed rounded p-2 text-sm bg-gray-900 break-all outline-none"
+      class="border shadow-md border-gray-200 border-dashed rounded p-2.5 text-sm bg-gray-900 break-all outline-none"
       v-if="isEditingCard"
       ref="editBox"
     >
@@ -36,11 +35,11 @@
       v-else
       :data-card-id="card.id"
       :class="[
-        isBeingDragged
+        isBeingDraggedOver
           ? 'opacity-50 border-dashed border-gray-300 text-gray-900'
           : 'border-gray-700 text-inherit',
       ]"
-      class="border shadow-md rounded p-2 text-sm bg-gray-900 cursor-grab active:cursor-grabbing break-all outline-none"
+      class="border shadow-md rounded p-2.5 text-sm bg-gray-900 cursor-grab active:cursor-grabbing break-all outline-none"
       contenteditable="false"
       draggable="true"
       @dragstart="(e) => handleDragStart(e)"
@@ -54,7 +53,10 @@
     </div>
 
     <!-- Bottom indicator begins here -->
-    <div class="border border-gray-500 mt-1" v-show="isHoveringBelow"></div>
+    <div
+      class="border mt-1 transition-colors"
+      :class="[isHoveringBelow ? 'border-gray-500' : 'border-transparent']"
+    ></div>
     <!-- Bottom indicator ends here -->
   </div>
 </template>
@@ -74,7 +76,7 @@ export default {
   },
   data() {
     return {
-      isBeingDragged: false,
+      isBeingDraggedOver: false,
       isEditingCard: false,
       isHoveringAbove: false,
       isHoveringBelow: false,
@@ -89,11 +91,11 @@ export default {
       "changeCardPosition",
     ]),
     handleDragEnd(event) {
-      this.isBeingDragged = false;
+      this.isBeingDraggedOver = false;
       this.updateDraggedCardInfo({ cardId: null, boardId: null });
     },
     handleDragStart(event) {
-      this.isBeingDragged = true;
+      this.isBeingDraggedOver = true;
 
       const data = JSON.stringify({
         cardId: this.card.id,
