@@ -3,7 +3,7 @@
     <button
       v-if="!showAddBoardForm"
       @click="handleOpenForm"
-      class="border border-gray-600 shadow bg-gray-800 rounded-md flex items-center gap-1 w-full p-2 text-gray-500"
+      class="border border-gray-600 shadow bg-gray-800 rounded-md flex items-center gap-1 w-full p-2 text-gray-500 whitespace-nowrap"
     >
       <AddBoardIcon :size="20" />
       <span>Add board</span>
