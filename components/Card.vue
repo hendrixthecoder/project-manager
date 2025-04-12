@@ -164,6 +164,12 @@ export default {
     handleDragOver(event) {
       event.preventDefault();
 
+      const { boardId, cardId } = this.draggedCardInfo;
+      // This is because were dragging the trash around
+      // and we dont need to show the indicator.
+
+      if (!boardId || !cardId) return;
+
       const targetCardId = Number(event.target.dataset.cardId);
       if (isNaN(targetCardId)) return;
 

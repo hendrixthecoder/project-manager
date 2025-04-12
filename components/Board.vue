@@ -2,7 +2,6 @@
   <section
     :class="[isDraggingOver ? 'border-gray-500' : 'border-transparent']"
     class="border p-2 flex flex-col gap-3 min-w-64 max-w-64 rounded transition-colors"
-    @dragenter="handleDragEnter"
     @dragleave="handleDragLeave"
     @dragover="handleDragOver"
     @drop="handleDrop"
@@ -37,7 +36,7 @@
   </section>
 </template>
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   props: {
@@ -53,7 +52,12 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["removeBoard", "changeCardName", "pushCardToBoard"]),
+    ...mapMutations([
+      "removeBoard",
+      "changeCardName",
+      "pushCardToBoard",
+      "updateDraggedCardInfo",
+    ]),
     handleKeyDown(event) {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
@@ -65,10 +69,6 @@ export default {
         boardId: this.board.id,
       });
     },
-    handleDragEnter() {
-      this.isDraggingOver = true;
-    },
-    getIndicators() {},
     handleBlur(event) {
       this.isEditingName = false;
       const newName = event.target.textContent.trim();
@@ -84,11 +84,18 @@ export default {
     },
     handleDragOver(event) {
       event.preventDefault();
+
+      const { boardId, cardId } = this.draggedCardInfo;
+      // This is because we're dragging the trash around
+      // and we dont need to show the border indicator.
+      if (!boardId || !cardId) return;
+
       this.isDraggingOver = true;
       event.dataTransfer.dropEffect = "move";
     },
     handleDrop(event) {
       this.isDraggingOver = false;
+      this.updateDraggedCardInfo({ cardId: null, boardId: null });
 
       let data = event.dataTransfer.getData("application/json");
       if (!data) return;
@@ -103,6 +110,9 @@ export default {
   },
   components: {
     TrashIcon: () => import("vue-material-design-icons/Delete.vue"),
+  },
+  computed: {
+    ...mapState(["draggedCardInfo"]),
   },
 };
 </script>

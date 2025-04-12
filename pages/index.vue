@@ -1,14 +1,12 @@
 <template lang="">
   <div
-    class="border border-gray-700 flex-grow rounded bg-gray-800 p-5 flex justify-between"
+    class="border border-gray-700 flex-grow rounded bg-gray-800 p-5 flex justify-between gap-2"
   >
-    <div class="flex gap-3 max-w-6xl overflow-y-hidden">
+    <div class="flex gap-3 flex-grow overflow-y-hidden">
       <Board :board="board" v-for="(board, idx) of boards" :key="board.id" />
       <AddBoard />
     </div>
-    <div class="flex gap-3">
-      <Trash />
-    </div>
+    <Trash />
   </div>
 </template>
 <script>

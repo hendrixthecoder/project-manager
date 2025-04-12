@@ -1,5 +1,5 @@
 <template lang="">
-  <div class="p-2 max-w-56 min-w-56 flex flex-col">
+  <div class="p-2 w-56 flex flex-col" @dragover="handleDragOver">
     <button
       v-if="!showAddBoardForm"
       @click="handleOpenForm"
@@ -72,6 +72,10 @@ export default {
 
       this.boardName = "";
       this.showAddBoardForm = false;
+    },
+    handleDragOver(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
     },
   },
 };
